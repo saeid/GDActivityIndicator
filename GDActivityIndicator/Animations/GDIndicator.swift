@@ -98,25 +98,25 @@ class GDIndicator: UIView {
         let circleSpace: CGFloat = 50
         let animDuration: CFTimeInterval = 3
         let animTime = CACurrentMediaTime()
-       
+        
         let topLeftCircleColor: UIColor = UIColor.whiteColor()
         let topRightCircleColor: UIColor = UIColor.blackColor()
         let bottomLeftCircleColor: UIColor = UIColor.blackColor()
         let bottomRightCircleColor: UIColor = UIColor.whiteColor()
-
+        
         let center = CGPointMake(bounds.width / 2, bounds.height / 2)
         let topLeft = CGPointMake(0 + circleSpace, 0 + circleSpace)
         let topRight = CGPointMake(bounds.width - circleSpace, 0 + circleSpace)
         let bottomLeft = CGPointMake(0 + circleSpace, bounds.height - circleSpace)
         let bottomRight = CGPointMake(bounds.width - circleSpace, bounds.height - circleSpace)
         let circleSize = CGSizeMake(circleRadius, circleRadius)
-
+        
         let lineWidth: CGFloat = 3.0
         let timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseInEaseOut)
-
+        
         //Create Circle bezier path
         let path = UIBezierPath(arcCenter: CGPointZero, radius: circleRadius, startAngle: circleStart, endAngle: circleEnd, clockwise: true)
-
+        
         //Top Left circle shape
         let topLeftCircle = CAShapeLayer()
         topLeftCircle.fillColor = topLeftCircleColor.CGColor
@@ -128,7 +128,7 @@ class GDIndicator: UIView {
         topLeftCircle.frame = CGRect(origin: topLeft, size: circleSize)
         
         layer.addSublayer(topLeftCircle)
-
+        
         //Top right circle shape
         let topRightCircle = CAShapeLayer()
         topRightCircle.fillColor = topRightCircleColor.CGColor
@@ -140,7 +140,7 @@ class GDIndicator: UIView {
         topRightCircle.frame = CGRect(origin: topRight, size: circleSize)
         
         layer.addSublayer(topRightCircle)
-
+        
         //bottom Left circle shape
         let bottomLeftCircle = CAShapeLayer()
         bottomLeftCircle.fillColor = bottomLeftCircleColor.CGColor
@@ -152,7 +152,7 @@ class GDIndicator: UIView {
         bottomLeftCircle.frame = CGRect(origin: bottomLeft, size: circleSize)
         
         layer.addSublayer(bottomLeftCircle)
-
+        
         //bottom right circle shape
         let bottomRightCircle = CAShapeLayer()
         bottomRightCircle.fillColor = bottomRightCircleColor.CGColor
@@ -168,18 +168,18 @@ class GDIndicator: UIView {
         //Rotate animation
         let rotateAnim = CAKeyframeAnimation(keyPath: "transform.rotation.z")
         rotateAnim.values = [0, M_PI , M_PI * 2]
-        rotateAnim.keyTimes = [0.3, 0.6, 1]
+        rotateAnim.keyTimes = [0.0, 0.4, 1]
         rotateAnim.repeatCount = HUGE
         rotateAnim.duration = animDuration / 2
         rotateAnim.removedOnCompletion = false
         rotateAnim.timingFunctions = [timingFunction, timingFunction, timingFunction]
-
+        
         layer.addAnimation(rotateAnim, forKey: nil)
-
+        
         //Translate position animation
         let transAnim = CAKeyframeAnimation(keyPath: "position")
         transAnim.duration = animDuration
-        transAnim.keyTimes = [0.1, 0.3, 0.5, 0.7, 1]
+        transAnim.keyTimes = [0.0, 0.3, 0.5, 0.7, 1]
         transAnim.removedOnCompletion = false
         transAnim.timingFunctions = [timingFunction, timingFunction, timingFunction, timingFunction]
         transAnim.repeatCount = HUGE
@@ -188,20 +188,10 @@ class GDIndicator: UIView {
             transAnim.values = [NSValue(CGPoint: values[0]), NSValue(CGPoint: values[1]), NSValue(CGPoint: values[2]), NSValue(CGPoint: values[3]), NSValue(CGPoint: values[4])]
             shapeToAdd.addAnimation(transAnim, forKey: nil)
         }
-
+        
         setTransisionValues(topLeftCircle, values: [topLeft, center, bottomRight, center, topLeft])
         setTransisionValues(topRightCircle, values: [topRight, center, bottomLeft, center, topRight])
         setTransisionValues(bottomLeftCircle, values: [bottomLeft, center, topRight, center, bottomLeft])
         setTransisionValues(bottomRightCircle, values: [bottomRight, center, topLeft, center, bottomRight])
-        
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    } 
 }

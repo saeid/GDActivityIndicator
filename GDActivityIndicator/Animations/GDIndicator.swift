@@ -25,17 +25,29 @@ class GDIndicator: UIView {
         self.backgroundColor = UIColor.clearColor()
     }
     
-    func circular3DotsIndicator(){
+    /*!
+     Simple circular animation
+     
+     - parameter circleRadius: radius of circles
+     - parameter circleSpace:  space between each circle
+     - parameter animDuration: animation duration
+     - parameter shapeCol:     color of circles
+     - parameter circleCount:  number of circles in a row
+     - parameter colCount:     number of columns
+     */
+    func circularDotsIndicator(
+        circleRadius: CGFloat = 15.0,
+        circleSpace: CGFloat = 7,
+        animDuration: CFTimeInterval = 0.7,
+        shapeCol: UIColor = UIColor.whiteColor(),
+        circleCount: Int = 3,
+        colCount: Int = 0){
+        
         //Setting properties
-        let circleRadius: CGFloat = 5.0
         let circleStart: CGFloat = 0.0
         let circleEnd: CGFloat = CGFloat(M_PI * 2)
-        let circleSpace: CGFloat = 7
-        let animDuration: CFTimeInterval = 0.7
         let animTime = CACurrentMediaTime()
         let animTimes = [0.0, 0.5, 0.8, 1, 1.2, 1.26, 1.4, 1.6, 1.9, 2.1, 2.4, 2.8]
-        let shapeCol: UIColor = UIColor.whiteColor()
-        let circleCount: Int = 3
         
         //Create Circle bezier path
         let path = UIBezierPath(arcCenter: CGPointZero, radius: circleRadius, startAngle: circleStart, endAngle: circleEnd, clockwise: true)
@@ -69,41 +81,77 @@ class GDIndicator: UIView {
         groupAnim.animations = [fadeAnim, xAnim, yAnim]
         
         //Create n shapes with animations
-        for i in 0..<circleCount{
-            //Create Shape for path
-            let shapeToAdd = CAShapeLayer()
-            shapeToAdd.fillColor = shapeCol.CGColor
-            shapeToAdd.strokeColor = nil
-            shapeToAdd.path = path.CGPath
-            
-            let frame = CGRectMake(
-                (x + circleRadius * CGFloat(i) + circleSpace * CGFloat(i)),
-                y,
-                circleRadius,
-                circleRadius)
-            shapeToAdd.frame = frame
-            
-            groupAnim.beginTime = animTime + animTimes[i]
-            
-            layer.addSublayer(shapeToAdd)
-            shapeToAdd.addAnimation(groupAnim, forKey: nil)
+        if colCount != 0{
+            for i in 0..<circleCount{
+                for j in 0..<colCount{
+                    //Create Shape for path
+                    let shapeToAdd = CAShapeLayer()
+                    shapeToAdd.fillColor = shapeCol.CGColor
+                    shapeToAdd.strokeColor = nil
+                    shapeToAdd.path = path.CGPath
+                    
+                    let frame = CGRectMake(
+                        (x + circleRadius * CGFloat(i) + circleSpace * CGFloat(i)),
+                        (y + circleRadius * CGFloat(j) + circleSpace * CGFloat(j)),
+                        circleRadius,
+                        circleRadius)
+                    shapeToAdd.frame = frame
+                    
+                    groupAnim.beginTime = animTime + animTimes[i]
+                    
+                    layer.addSublayer(shapeToAdd)
+                    shapeToAdd.addAnimation(groupAnim, forKey: nil)
+                }
+            }
+        }else{
+            for i in 0..<circleCount{
+                //Create Shape for path
+                let shapeToAdd = CAShapeLayer()
+                shapeToAdd.fillColor = shapeCol.CGColor
+                shapeToAdd.strokeColor = nil
+                shapeToAdd.path = path.CGPath
+                
+                let frame = CGRectMake(
+                    (x + circleRadius * CGFloat(i) + circleSpace * CGFloat(i)),
+                    y,
+                    circleRadius,
+                    circleRadius)
+                shapeToAdd.frame = frame
+                
+                groupAnim.beginTime = animTime + animTimes[i]
+                
+                layer.addSublayer(shapeToAdd)
+                shapeToAdd.addAnimation(groupAnim, forKey: nil)
+            }
         }
     }
     
-    func circular4DotRotatingIndicator(){
+    /*!
+     4 circle rotating/switching animation
+     
+     - parameter circleRadius:           radius of circles
+     - parameter circleSpace:            space between circles
+     - parameter animDuration:           duration of each interval of animation
+     - parameter topLeftCircleColor:     top-left circle color
+     - parameter topRightCircleColor:    top-right circle color
+     - parameter bottomLeftCircleColor:  bottom-left circle color
+     - parameter bottomRightCircleColor: bottom-right circle color
+     */
+    func circularDotsRotatingIndicator(
+        circleRadius: CGFloat = 9.0,
+        circleSpace: CGFloat = 50,
+        animDuration: CFTimeInterval = 3,
+        topLeftCircleColor: UIColor = UIColor.whiteColor(),
+        topRightCircleColor: UIColor = UIColor.blackColor(),
+        bottomLeftCircleColor: UIColor = UIColor.blackColor(),
+        bottomRightCircleColor: UIColor = UIColor.whiteColor()){
+        
         //Setting properties
-        let circleRadius: CGFloat = 9.0
         let circleStart: CGFloat = 0.0
         let circleEnd: CGFloat = CGFloat(M_PI * 2)
-        let circleSpace: CGFloat = 50
-        let animDuration: CFTimeInterval = 3
         let animTime = CACurrentMediaTime()
         
-        let topLeftCircleColor: UIColor = UIColor.whiteColor()
-        let topRightCircleColor: UIColor = UIColor.blackColor()
-        let bottomLeftCircleColor: UIColor = UIColor.blackColor()
-        let bottomRightCircleColor: UIColor = UIColor.whiteColor()
-        
+        //Calculate possition for each circle in different directions
         let center = CGPointMake(bounds.width / 2, bounds.height / 2)
         let topLeft = CGPointMake(0 + circleSpace, 0 + circleSpace)
         let topRight = CGPointMake(bounds.width - circleSpace, 0 + circleSpace)
@@ -193,5 +241,6 @@ class GDIndicator: UIView {
         setTransisionValues(topRightCircle, values: [topRight, center, bottomLeft, center, topRight])
         setTransisionValues(bottomLeftCircle, values: [bottomLeft, center, topRight, center, bottomLeft])
         setTransisionValues(bottomRightCircle, values: [bottomRight, center, topLeft, center, bottomRight])
-    } 
+    }
+    
 }

@@ -300,6 +300,7 @@
 				36E36EAC1CCA752100340B87 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

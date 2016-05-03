@@ -17,12 +17,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aX8-zR-W7q" customClass="GDIndicator" customModule="GDActivityIndicator" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aX8-zR-W7q" customClass="GDIndicator" customModule="GDActivityIndicator" customModuleProvider="target">
                                 <rect key="frame" x="117" y="264" width="140" height="140"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="aX8-zR-W7q" secondAttribute="trailing" constant="118" id="Ggx-dN-nOW"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="aX8-zR-W7q" secondAttribute="bottom" constant="263" id="KOK-uZ-XNg"/>
+                            <constraint firstItem="aX8-zR-W7q" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="117" id="b3O-S2-2YQ"/>
+                            <constraint firstItem="aX8-zR-W7q" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="244" id="oAs-2s-Gfe"/>
+                        </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>

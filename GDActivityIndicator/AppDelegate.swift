@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  GDActivityIndicator
 //
-//  Created by Saeid on 4/22/16.
+//  Created by Saeid Basirnia on 4/22/16.
 //  Copyright © 2016 Saeidbsn. All rights reserved.
 //
 

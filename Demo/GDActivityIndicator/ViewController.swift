@@ -18,9 +18,10 @@ class ViewController: UIViewController {
         self.view.backgroundColor = UIColor(red: CGFloat(237 / 255.0), green: CGFloat(85 / 255.0), blue: CGFloat(101 / 255.0), alpha: 1)
         
         //load indicator with default values
-        cView.circularDotsIndicator()
+//        cView.circularDotsIndicator()
 //        cView.circularDotsRotatingIndicator()
-        
+//        cView.circularDotsRotatingChain()
+
         //load indicator with custom values
 //        cView.circularDotsIndicator(
 //            15.0,
@@ -30,6 +31,8 @@ class ViewController: UIViewController {
 //            circleCount: 3,
 //            colCount: 0)
         
+        //
+        cView.circularDotsRotatingChain()
         
     }
 

@@ -100,7 +100,7 @@ class GDIndicator: UIView {
                     groupAnim.beginTime = animTime + animTimes[i]
                     
                     layer.addSublayer(shapeToAdd)
-                    shapeToAdd.addAnimation(groupAnim, forKey: nil)
+                    shapeToAdd.addAnimation(groupAnim, forKey: "circularDotsIndicator")
                 }
             }
         }else{
@@ -121,7 +121,7 @@ class GDIndicator: UIView {
                 groupAnim.beginTime = animTime + animTimes[i]
                 
                 layer.addSublayer(shapeToAdd)
-                shapeToAdd.addAnimation(groupAnim, forKey: nil)
+                shapeToAdd.addAnimation(groupAnim, forKey: "circularDotsIndicator")
             }
         }
     }
@@ -234,7 +234,7 @@ class GDIndicator: UIView {
         
         func setTransisionValues(shapeToAdd: CAShapeLayer, values: [CGPoint]){
             transAnim.values = [NSValue(CGPoint: values[0]), NSValue(CGPoint: values[1]), NSValue(CGPoint: values[2]), NSValue(CGPoint: values[3]), NSValue(CGPoint: values[4])]
-            shapeToAdd.addAnimation(transAnim, forKey: nil)
+            shapeToAdd.addAnimation(transAnim, forKey: "circularDotsRotatingIndicator")
         }
         
         setTransisionValues(topLeftCircle, values: [topLeft, center, bottomRight, center, topLeft])
@@ -243,4 +243,43 @@ class GDIndicator: UIView {
         setTransisionValues(bottomRightCircle, values: [bottomRight, center, topLeft, center, bottomRight])
     }
     
+    /*!
+     Chain rotation of circles
+     
+     - parameter circleRadius:     circle radius and circles size
+     - parameter radiusMultiplier: radius of the rotation path. bigger values means bigger rotation area
+     - parameter animDuration:     duration of a full rotation
+     */
+    func circularDotsRotatingChain(
+        circleRadius: CGFloat = 5.0,
+        radiusMultiplier: CGFloat = 5,
+        animDuration: CFTimeInterval = 2.0){
+        
+        var circleShape: CAShapeLayer!
+        let circleStart: CGFloat = 0.0
+        let circleEnd: CGFloat = CGFloat(M_PI * 2)
+        var animRate: Float = 0.0
+        
+        for i in 0...4{
+            animRate = Float(i) * 1.7 / 8
+            
+            let circlePath = UIBezierPath(arcCenter: CGPointMake(self.bounds.width / 2, self.bounds.height / 2), radius: circleRadius * 0.4 + CGFloat(i), startAngle: circleStart, endAngle: circleEnd, clockwise: true).CGPath
+            
+            circleShape = CAShapeLayer()
+            circleShape.path = circlePath
+            circleShape.fillColor = UIColor.whiteColor().CGColor
+            
+            let posAnim = CAKeyframeAnimation(keyPath: "position")
+            posAnim.path = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: circleRadius * radiusMultiplier, startAngle: circleStart - CGFloat(M_PI_2), endAngle: circleEnd + circleStart - CGFloat(M_PI_2), clockwise: true).CGPath
+            
+            
+            posAnim.repeatCount = HUGE
+            posAnim.duration = animDuration
+            posAnim.timingFunction = CAMediaTimingFunction(controlPoints: 0.5, 0.15 + animRate, 0.05, 1.0)
+            posAnim.removedOnCompletion = true
+            
+            circleShape.addAnimation(posAnim, forKey: nil)
+            layer.addSublayer(circleShape)
+        }
+    }
 }

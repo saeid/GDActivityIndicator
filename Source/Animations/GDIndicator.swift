@@ -282,4 +282,104 @@ class GDIndicator: UIView {
             layer.addSublayer(circleShape)
         }
     }
+    
+    func halfCircleRotating(){
+        let circleRadius: CGFloat = 20.0
+        let animDuration: CFTimeInterval = 3
+        
+        //Setting properties
+        let circleStart: CGFloat = 0.0
+        let circleEnd: CGFloat = CGFloat(M_PI * 2)
+        let animDelay = 1.6
+        
+        //Calculate possition for each circle in different directions
+        let center = CGPointMake(bounds.width / 2, bounds.height / 2)
+        
+        let circlePath = UIBezierPath()
+        circlePath.addArcWithCenter(center, radius: circleRadius, startAngle: circleStart, endAngle: circleEnd, clockwise: true)
+        let circlePath1 = UIBezierPath()
+        circlePath1.addArcWithCenter(center, radius: circleRadius - 3.0, startAngle: circleStart, endAngle: circleEnd, clockwise: false)
+        let circlePathCenter = UIBezierPath()
+        circlePathCenter.addArcWithCenter(center, radius: circleRadius - 8.0, startAngle: circleStart, endAngle: circleEnd, clockwise: true)
+        
+        let circleShape = CAShapeLayer()
+        circleShape.path = circlePath.CGPath
+        circleShape.fillColor = nil
+        circleShape.strokeColor = UIColor.whiteColor().CGColor
+        circleShape.lineWidth = 2.0
+        circleShape.strokeStart = 0.0
+        circleShape.strokeEnd = 0.0
+        
+        let circleShape1 = CAShapeLayer()
+        circleShape1.path = circlePath1.CGPath
+        circleShape1.fillColor = nil
+        circleShape1.strokeColor = UIColor.whiteColor().CGColor
+        circleShape1.lineWidth = 2.0
+        circleShape1.strokeStart = 0.0
+        circleShape1.strokeEnd = 0.0
+        
+        let circleShapeCenter = CAShapeLayer()
+        circleShapeCenter.path = circlePathCenter.CGPath
+        circleShapeCenter.fillColor = UIColor.whiteColor().CGColor
+        
+        let rotateAnim = CABasicAnimation(keyPath: "transform.rotation.z")
+        rotateAnim.duration = animDuration * 2.3
+        rotateAnim.fromValue = circleStart
+        rotateAnim.toValue = circleEnd
+        rotateAnim.repeatCount = HUGE
+        layer.addAnimation(rotateAnim, forKey: nil)
+        
+        let drawAnim = CABasicAnimation(keyPath: "strokeEnd")
+        drawAnim.fromValue = 0.0
+        drawAnim.toValue = 1.0
+        drawAnim.duration = animDuration
+        
+        let eraseAnim = CABasicAnimation(keyPath: "strokeStart")
+        eraseAnim.fromValue = 0.0
+        eraseAnim.toValue = 1.0
+        eraseAnim.beginTime = animDelay
+        eraseAnim.duration = animDuration - animDelay
+        
+        let groupAnim = CAAnimationGroup()
+        groupAnim.animations = [drawAnim, eraseAnim]
+        groupAnim.repeatCount = HUGE
+        groupAnim.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        groupAnim.removedOnCompletion = false
+        groupAnim.duration = animDuration
+        
+        let drawAnim1 = CABasicAnimation(keyPath: "strokeEnd")
+        drawAnim1.fromValue = 0.0
+        drawAnim1.toValue = 1.0
+        drawAnim1.duration = animDuration
+        
+        let eraseAnim1 = CABasicAnimation(keyPath: "strokeStart")
+        eraseAnim1.fromValue = 0.0
+        eraseAnim1.toValue = 1.0
+        eraseAnim1.beginTime = animDelay
+        eraseAnim1.duration = animDuration - animDelay
+        
+        let groupAnim1 = CAAnimationGroup()
+        groupAnim1.animations = [drawAnim1, eraseAnim1]
+        groupAnim1.repeatCount = HUGE
+        groupAnim1.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        groupAnim1.removedOnCompletion = false
+        groupAnim1.duration = animDuration
+        
+        circleShape.addAnimation(groupAnim, forKey: nil)
+        layer.addSublayer(circleShape)
+        circleShape1.addAnimation(groupAnim1, forKey: nil)
+        layer.addSublayer(circleShape1)
+        layer.addSublayer(circleShapeCenter)
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

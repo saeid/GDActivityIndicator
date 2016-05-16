@@ -32,7 +32,7 @@ class ViewController: UIViewController {
 //            colCount: 0)
         
         //
-        cView.circularDotsRotatingChain()
+        cView.halfCircleRotating()
         
     }
 

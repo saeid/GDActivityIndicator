@@ -9,37 +9,126 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-    @IBOutlet weak var cView: GDIndicator!
-
+    
+    enum IndicatorType{
+        case blink
+        case rotate
+        case halfRotate
+        case chain
+    }
+    
+    let viewsInRow: Int = 2
+    
+    override func viewDidLayoutSubviews() {
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor(red: CGFloat(237 / 255.0), green: CGFloat(85 / 255.0), blue: CGFloat(101 / 255.0), alpha: 1)
         
-        //load indicator with default values
-//        cView.circularDotsIndicator()
-//        cView.circularDotsRotatingIndicator()
-//        cView.circularDotsRotatingChain()
-
-        //load indicator with custom values
-//        cView.circularDotsIndicator(
-//            15.0,
-//            circleSpace: 7,
-//            animDuration: 0.7,
-//            shapeCol: UIColor.whiteColor(),
-//            circleCount: 3,
-//            colCount: 0)
+        self.view.backgroundColor = UIColor.red.withAlphaComponent(0.7)
         
-        //
-        cView.halfCircleRotating()
+        let indicators: [IndicatorType] = [.blink, .rotate, .halfRotate, .chain]
+        
+        self.createViews(numberOfRows: Int((Double(indicators.count) / Double(viewsInRow)).rounded(.up)), lst: indicators)
         
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    func createViews(numberOfRows: Int, lst: [IndicatorType]){
+        var indicatorView: UIView!
+        var indicators = [UIView]()
+        
+        for itm in lst{
+            switch itm{
+            case .blink:
+                indicatorView = GDCircularDotsBlinking()
+                indicatorView.translatesAutoresizingMaskIntoConstraints = false
+                indicators.append(indicatorView)
+                
+                self.view.addSubview(indicatorView)
+                break
+            case .chain:
+                indicatorView = GDCircularDotsChain()
+                indicatorView.translatesAutoresizingMaskIntoConstraints = false
+                indicators.append(indicatorView)
+                
+                self.view.addSubview(indicatorView)
+                break
+            case .halfRotate:
+                indicatorView = GDHalfCircleRotating()
+                indicatorView.translatesAutoresizingMaskIntoConstraints = false
+                indicators.append(indicatorView)
+                
+                self.view.addSubview(indicatorView)
+                break
+            case .rotate:
+                indicatorView = GDCircularDotsRotating()
+                indicatorView.translatesAutoresizingMaskIntoConstraints = false
+                indicators.append(indicatorView)
+                
+                self.view.addSubview(indicatorView)
+                break
+            }
+        }
+        setupConstraints(totalRows: numberOfRows, views: indicators)
+    }
+    
+    func setupConstraints(totalRows: Int, views: [UIView]){
+        var row = 0
+        var itemsInRow = 0
+        var lastAddedView: UIView!
+        
+        for itm in views{
+            if itemsInRow < viewsInRow{
+                if itemsInRow == 0 && row == 0{
+                    let top: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 0)
+                    let left: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
+                    let height: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.height / CGFloat(totalRows))
+                    let width: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.width / CGFloat(viewsInRow))
+                    
+                    self.view.addConstraints([top, left, height, width])
+                }else{
+                    let top: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .top, relatedBy: .equal, toItem: lastAddedView, attribute: .top, multiplier: 1, constant: 0)
+                    let left: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .left, relatedBy: .equal, toItem: lastAddedView, attribute: .right, multiplier: 1, constant: 0)
+                    let height: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.height / CGFloat(totalRows))
+                    let width: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.width / CGFloat(viewsInRow))
+                    
+                    if itemsInRow == viewsInRow - 1{
+                        let right: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1, constant: 0)
+                        
+                        self.view.addConstraint(right)
+                    }
 
+                    self.view.addConstraints([top, left, height, width])
+                }
+                itemsInRow += 1
+                lastAddedView = itm
+            }else{
+                row += 1
+                itemsInRow = 0
+                
+                if itemsInRow < viewsInRow{
+                    let top: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .top, relatedBy: .equal, toItem: lastAddedView, attribute: .bottom, multiplier: 1, constant: 0)
+                    let left: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
+                    let height: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.height / CGFloat(totalRows))
+                    let width: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.width / CGFloat(viewsInRow))
+                    
+                    if itemsInRow == viewsInRow - 1{
+                        let right: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1, constant: 0)
+                        
+                        self.view.addConstraint(right)
 
+                    }
+                    self.view.addConstraints([top, left, height, width])
+                }
+                lastAddedView = itm
+            }
+            
+        }
+        
+    }
 }
 

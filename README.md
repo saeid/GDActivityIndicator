@@ -8,4 +8,5 @@ A set of animated activity indicators and loading bars
 
 Demo project included for details 
 
-![simulator screen shot jan 11 2017 19 41 50](https://cloud.githubusercontent.com/assets/9967486/21856119/09444508-d836-11e6-96a1-76a7b3c5df9e.png)
+![2](https://cloud.githubusercontent.com/assets/9967486/21965530/3904703a-db77-11e6-827c-5192d97e1f34.gif)
+![1](https://cloud.githubusercontent.com/assets/9967486/21965531/39883e56-db77-11e6-8b2e-8faf8857a0d0.gif)

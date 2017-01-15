@@ -20,16 +20,18 @@ class ViewController: UIViewController {
     let viewsInRow: Int = 2
     
     override func viewDidLayoutSubviews() {
+//        self.view.showLoading(msg: "Please Wait")
+        self.view.showLoading(onView: self.view, indicatorType: .normal, msg: "Please wait...", backgroundType: .clearWithBox)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view.backgroundColor = UIColor.red.withAlphaComponent(0.7)
-        
-        let indicators: [IndicatorType] = [.blink, .rotate, .halfRotate, .chain]
-        
-        self.createViews(numberOfRows: Int((Double(indicators.count) / Double(viewsInRow)).rounded(.up)), lst: indicators)
+//        
+//        self.view.backgroundColor = UIColor.red.withAlphaComponent(0.7)
+//        
+//        let indicators: [IndicatorType] = [.blink, .rotate, .halfRotate, .chain]
+//        
+//        self.createViews(numberOfRows: Int((Double(indicators.count) / Double(viewsInRow)).rounded(.up)), lst: indicators)
         
     }
     
@@ -101,7 +103,7 @@ class ViewController: UIViewController {
                         
                         self.view.addConstraint(right)
                     }
-
+                    
                     self.view.addConstraints([top, left, height, width])
                 }
                 itemsInRow += 1
@@ -120,13 +122,12 @@ class ViewController: UIViewController {
                         let right: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1, constant: 0)
                         
                         self.view.addConstraint(right)
-
+                        
                     }
                     self.view.addConstraints([top, left, height, width])
                 }
                 lastAddedView = itm
             }
-            
         }
         
     }

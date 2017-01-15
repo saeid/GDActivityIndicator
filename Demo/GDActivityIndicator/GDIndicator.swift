@@ -4,9 +4,176 @@
 //
 //  Created by Saeid Basirnia on 4/22/16.
 //  Copyright © 2016 Saeidbsn. All rights reserved.
-//
+//  saeidbsn.com
 
 import UIKit
+
+fileprivate func setupIndicatorConstraints(parentView: UIView, childView: UIView){
+    let centerX = NSLayoutConstraint(item: childView, attribute: .centerX, relatedBy: .equal, toItem: parentView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
+    let centerY = NSLayoutConstraint(item: childView, attribute: .centerY, relatedBy: .equal, toItem: parentView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+    
+    let height = NSLayoutConstraint(item: childView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 100)
+    
+    parentView.addConstraints([centerX, centerY, height])
+}
+
+fileprivate func setupIndicatorConstraints(contView: UIView, indicatorView: UIView, lbl: UILabel? = nil){
+    let centerX = NSLayoutConstraint(item: indicatorView, attribute: .centerX, relatedBy: .equal, toItem: contView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
+    let centerY = NSLayoutConstraint(item: indicatorView, attribute: .centerY, relatedBy: .equal, toItem: contView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+    
+    let height = NSLayoutConstraint(item: indicatorView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 50.0)
+    let width = NSLayoutConstraint(item: indicatorView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 50.0)
+
+    if let lbl = lbl{
+        let centerX = NSLayoutConstraint(item: lbl, attribute: .centerX, relatedBy: .equal, toItem: contView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
+        let left = NSLayoutConstraint(item: lbl, attribute: .left, relatedBy: .equal, toItem: contView, attribute: .left, multiplier: 1.0, constant: 8.0)
+        let right = NSLayoutConstraint(item: lbl, attribute: .right, relatedBy: .equal, toItem: contView, attribute: .right, multiplier: 1.0, constant: -8.0)
+        let bottom = NSLayoutConstraint(item: lbl, attribute: .bottom, relatedBy: .equal, toItem: contView, attribute: .bottom, multiplier: 1.0, constant: -3.0)
+        
+        let desireWidth: CGFloat = lbl.frame.width < 100.0 ? 100.0 : lbl.frame.width + 16
+        let width = NSLayoutConstraint(item: contView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desireWidth)
+        
+        contView.addConstraints([centerX, left, right, bottom, width])
+    }else{
+        let width = NSLayoutConstraint(item: contView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 100.0)
+        
+        contView.addConstraint(width)
+    }
+    
+    contView.addConstraints([centerX, centerY, height, width])
+}
+
+extension UIView{
+    enum Posision{
+        case top
+        case center
+        case bottom
+    }
+    
+    enum Indicator{
+        case normal
+        case blink
+        case rotate
+        case chain
+        case chase
+    }
+    
+    enum BackgroundType{
+        case dimmedWithBox
+        case clearWithBox
+        case dimmed
+        case clear
+    }
+    
+    /**
+     Adds a loading to current window. 
+     
+     - parameters:
+        - onView: set a view to place indicator view on it, nil for active window
+        - position: position of indicator view, [top, center, bottom]
+        - indicatorType: main animating indicator for indicator view
+        - msg: indicator view message, nil for none
+        - backgroundType: different types for background and indicator view background view
+    */
+    func showLoading(onView: UIView? = nil, position: Posision = .center, indicatorType: Indicator = .normal ,msg: String? = nil, backgroundType: BackgroundType = .clearWithBox){
+        
+        var targetView: UIView!
+        if let target = onView{
+            targetView = target
+        }else{
+            targetView = UIApplication.shared.delegate!.window!
+        }
+        
+        if let _ = targetView.viewWithTag(10000){
+            return
+        }
+        
+        let bigView: UIView = UIView()
+        bigView.tag = 10000
+        bigView.frame = self.bounds
+        targetView.addSubview(bigView)
+        
+        var indicatorView: UIView!
+        switch indicatorType{
+        case .normal:
+            let activity = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+            activity.translatesAutoresizingMaskIntoConstraints = false
+            activity.startAnimating()
+            
+            indicatorView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+            indicatorView.backgroundColor = UIColor.clear
+            indicatorView.translatesAutoresizingMaskIntoConstraints = false
+
+            indicatorView.addSubview(activity)
+            
+            let centerX = NSLayoutConstraint(item: activity, attribute: .centerX, relatedBy: .equal, toItem: indicatorView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
+            let centerY = NSLayoutConstraint(item: activity, attribute: .centerY, relatedBy: .equal, toItem: indicatorView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+            
+            indicatorView.addConstraints([centerX, centerY])
+            break
+        case .blink:
+            indicatorView = GDCircularDotsBlinking()
+            break
+        case .chain:
+            indicatorView = GDCircularDotsChain()
+            break
+        case .chase:
+            indicatorView = GDHalfCircleRotating()
+            break
+        case .rotate:
+            indicatorView = GDCircularDotsRotating()
+            break
+        }
+        
+        let containerView: UIView = UIView()
+        containerView.layer.cornerRadius = 10
+        
+        bigView.addSubview(containerView)
+        containerView.addSubview(indicatorView)
+        
+        indicatorView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        setupIndicatorConstraints(parentView: bigView, childView: containerView)
+        
+        if let msg = msg{
+            let lbl: UILabel = UILabel()
+            lbl.textColor = UIColor.white
+            lbl.font = UIFont.systemFont(ofSize: 13)
+            lbl.text = msg
+            lbl.textAlignment = .center
+            lbl.translatesAutoresizingMaskIntoConstraints = false
+            lbl.sizeToFit()
+
+            containerView.addSubview(lbl)
+            setupIndicatorConstraints(contView: containerView, indicatorView: indicatorView, lbl: lbl)
+        }else{
+            setupIndicatorConstraints(contView: containerView, indicatorView: indicatorView)
+        }
+        
+        switch backgroundType{
+        case .clear:
+            bigView.backgroundColor = UIColor.clear
+            break
+        case .dimmed:
+            bigView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+            break
+        case .clearWithBox:
+            bigView.backgroundColor = UIColor.clear
+            containerView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+            break
+        case .dimmedWithBox:
+            bigView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+            containerView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+            break
+        }
+    }
+    
+    func hideLoading(){
+        guard let v = UIApplication.shared.delegate!.window!!.viewWithTag(10000) else{ return }
+        v.removeFromSuperview()
+    }
+}
 
 class GDCircularDotsBlinking: UIView{
     var circleRadius: CGFloat = 5.0
@@ -22,14 +189,14 @@ class GDCircularDotsBlinking: UIView{
         setupView()
     }
     
-    /*!
+    /**
      - parameters:
-        - cRadius: radius of circles
-        - cSpace:  space between each circle
-        - aDuration: animation duration
-        - shapeColor: color of circles
-        - cCount: number of circles in a row
-        - colCount: number of columns
+     - cRadius: radius of circles
+     - cSpace:  space between each circle
+     - aDuration: animation duration
+     - shapeColor: color of circles
+     - cCount: number of circles in a row
+     - colCount: number of columns
      */
     init(frame: CGRect, cRadius: CGFloat, cSpace: CGFloat, aDuration: CFTimeInterval, shapeColor: UIColor, cCount: Int, colCount: Int) {
         super.init(frame: frame)
@@ -157,7 +324,7 @@ class GDCircularDotsRotating: UIView{
         
         setupView()
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -166,13 +333,13 @@ class GDCircularDotsRotating: UIView{
     
     /**
      - parameters:
-        - parameter cRadius: radius of circles
-        - parameter cSpace: space between circles
-        - parameter aDuration: duration of each interval of animation
-        - parameter topLeftColor: top-left circle color
-        - parameter topRightColor: top-right circle color
-        - parameter bottomLeftColor: bottom-left circle color
-        - parameter bottomRightColor: bottom-right circle color
+     - parameter cRadius: radius of circles
+     - parameter cSpace: space between circles
+     - parameter aDuration: duration of each interval of animation
+     - parameter topLeftColor: top-left circle color
+     - parameter topRightColor: top-right circle color
+     - parameter bottomLeftColor: bottom-left circle color
+     - parameter bottomRightColor: bottom-right circle color
      */
     init(frame: CGRect, cRadius: CGFloat, cSpace: CGFloat, aDuration: CFTimeInterval, topLeftColor: UIColor, topRightColor: UIColor, bottomLeftColor: UIColor, bottomRightColor: UIColor){
         super.init(frame: frame)
@@ -311,10 +478,10 @@ class GDCircularDotsChain: UIView{
     
     /**
      - parameters:
-        - cRadius: circle radius and circles size
-        - rMultiplier: radius of the rotation path. bigger values means bigger rotation area
-        - aDuration: duration of a full rotation
-        - isRotateOn: should the loading bar roate itself
+     - cRadius: circle radius and circles size
+     - rMultiplier: radius of the rotation path. bigger values means bigger rotation area
+     - aDuration: duration of a full rotation
+     - isRotateOn: should the loading bar roate itself
      */
     init(frame: CGRect, cRadius: CGFloat, rMultiplier: CGFloat, aDuration: CFTimeInterval, isRotateOn: Bool){
         super.init(frame: frame)
@@ -323,7 +490,7 @@ class GDCircularDotsChain: UIView{
         self.circleRadius = cRadius
         self.radiusMultiplier = rMultiplier
         self.animDuration = aDuration
-
+        
         self.setupView()
     }
     
@@ -340,7 +507,7 @@ class GDCircularDotsChain: UIView{
     override func draw(_ rect: CGRect) {
         self.circularDotsRotatingChain()
     }
-
+    
     func circularDotsRotatingChain(){
         var circleShape: CAShapeLayer!
         let circleStart: CGFloat = 0.0
@@ -353,7 +520,7 @@ class GDCircularDotsChain: UIView{
         rotateAnim.toValue = circleEnd
         rotateAnim.repeatCount = HUGE
         layer.add(rotateAnim, forKey: nil)
-
+        
         for i in 0...4{
             animRate = Float(i) * 1.7 / 8
             
@@ -380,10 +547,10 @@ class GDCircularDotsChain: UIView{
 
 class GDHalfCircleRotating: UIView{
     //MARK: - default variables
-     var circleRadius: CGFloat = 20.0
-     var animDuration: CFTimeInterval = 3
-     var animDelay: CFTimeInterval = 1.6
-
+    var circleRadius: CGFloat = 20.0
+    var animDuration: CFTimeInterval = 3
+    var animDelay: CFTimeInterval = 1.6
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -402,7 +569,7 @@ class GDHalfCircleRotating: UIView{
         self.circleRadius = cRadius
         self.animDuration = aDuration
         self.animDelay = aDelay
-
+        
         self.setupView()
     }
     
@@ -415,7 +582,7 @@ class GDHalfCircleRotating: UIView{
     func setupView(){
         self.backgroundColor = UIColor.clear
     }
-
+    
     override func draw(_ rect: CGRect) {
         self.halfCircleRotating()
     }

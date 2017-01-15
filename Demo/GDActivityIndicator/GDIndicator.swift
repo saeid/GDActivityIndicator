@@ -43,13 +43,7 @@ fileprivate func setupIndicatorConstraints(contView: UIView, indicatorView: UIVi
     contView.addConstraints([centerX, centerY, height, width])
 }
 
-extension UIView{
-    enum Posision{
-        case top
-        case center
-        case bottom
-    }
-    
+extension UIView{    
     enum Indicator{
         case normal
         case blink
@@ -70,12 +64,11 @@ extension UIView{
      
      - parameters:
         - onView: set a view to place indicator view on it, nil for active window
-        - position: position of indicator view, [top, center, bottom]
         - indicatorType: main animating indicator for indicator view
         - msg: indicator view message, nil for none
         - backgroundType: different types for background and indicator view background view
     */
-    func showLoading(onView: UIView? = nil, position: Posision = .center, indicatorType: Indicator = .normal ,msg: String? = nil, backgroundType: BackgroundType = .clearWithBox){
+    func showLoading(onView: UIView? = nil, indicatorType: Indicator = .normal ,msg: String? = nil, backgroundType: BackgroundType = .clearWithBox){
         
         var targetView: UIView!
         if let target = onView{

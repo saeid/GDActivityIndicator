@@ -21,17 +21,17 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
 //        self.view.showLoading(msg: "Please Wait")
-        self.view.showLoading(onView: self.view, indicatorType: .normal, msg: "Please wait...", backgroundType: .clearWithBox)
+//        self.view.showLoading(onView: self.view, indicatorType: .normal, msg: "Please wait...", backgroundType: .clearWithBox)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        
-//        self.view.backgroundColor = UIColor.red.withAlphaComponent(0.7)
-//        
-//        let indicators: [IndicatorType] = [.blink, .rotate, .halfRotate, .chain]
-//        
-//        self.createViews(numberOfRows: Int((Double(indicators.count) / Double(viewsInRow)).rounded(.up)), lst: indicators)
+
+        self.view.backgroundColor = UIColor.red.withAlphaComponent(0.7)
+        
+        let indicators: [IndicatorType] = [.blink, .rotate, .halfRotate, .chain]
+        
+        self.createViews(numberOfRows: Int((Double(indicators.count) / Double(viewsInRow)).rounded(.up)), lst: indicators)
         
     }
     

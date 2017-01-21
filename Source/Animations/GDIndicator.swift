@@ -23,7 +23,7 @@ fileprivate func setupIndicatorConstraints(contView: UIView, indicatorView: UIVi
     
     let height = NSLayoutConstraint(item: indicatorView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 50.0)
     let width = NSLayoutConstraint(item: indicatorView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 50.0)
-
+    
     if let lbl = lbl{
         let centerX = NSLayoutConstraint(item: lbl, attribute: .centerX, relatedBy: .equal, toItem: contView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
         let left = NSLayoutConstraint(item: lbl, attribute: .left, relatedBy: .equal, toItem: contView, attribute: .left, multiplier: 1.0, constant: 8.0)
@@ -43,13 +43,14 @@ fileprivate func setupIndicatorConstraints(contView: UIView, indicatorView: UIVi
     contView.addConstraints([centerX, centerY, height, width])
 }
 
-extension UIView{    
+extension UIView{
     enum Indicator{
         case normal
         case blink
         case rotate
         case chain
         case chase
+        case circle
     }
     
     enum BackgroundType{
@@ -60,14 +61,14 @@ extension UIView{
     }
     
     /**
-     Adds a loading to current window. 
+     Adds a loading to current window.
      
      - parameters:
-        - onView: set a view to place indicator view on it, nil for active window
-        - indicatorType: main animating indicator for indicator view
-        - msg: indicator view message, nil for none
-        - backgroundType: different types for background and indicator view background view
-    */
+     - onView: set a view to place indicator view on it, nil for active window
+     - indicatorType: main animating indicator for indicator view
+     - msg: indicator view message, nil for none
+     - backgroundType: different types for background and indicator view background view
+     */
     func showLoading(onView: UIView? = nil, indicatorType: Indicator = .normal ,msg: String? = nil, backgroundType: BackgroundType = .clearWithBox){
         
         var targetView: UIView!
@@ -96,7 +97,7 @@ extension UIView{
             indicatorView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
             indicatorView.backgroundColor = UIColor.clear
             indicatorView.translatesAutoresizingMaskIntoConstraints = false
-
+            
             indicatorView.addSubview(activity)
             
             let centerX = NSLayoutConstraint(item: activity, attribute: .centerX, relatedBy: .equal, toItem: indicatorView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
@@ -116,6 +117,8 @@ extension UIView{
         case .rotate:
             indicatorView = GDCircularDotsRotating()
             break
+        case .circle:
+            indicatorView = GDCircle()
         }
         
         let containerView: UIView = UIView()
@@ -137,7 +140,7 @@ extension UIView{
             lbl.textAlignment = .center
             lbl.translatesAutoresizingMaskIntoConstraints = false
             lbl.sizeToFit()
-
+            
             containerView.addSubview(lbl)
             setupIndicatorConstraints(contView: containerView, indicatorView: indicatorView, lbl: lbl)
         }else{
@@ -165,6 +168,165 @@ extension UIView{
     func hideLoading(){
         guard let v = UIApplication.shared.delegate!.window!!.viewWithTag(10000) else{ return }
         v.removeFromSuperview()
+    }
+}
+
+class GDCircle: UIView{
+    fileprivate var progressShape: CAShapeLayer = CAShapeLayer()
+    fileprivate var routeShape: CAShapeLayer? = nil
+    fileprivate var progressLabel: UILabel? = nil
+    fileprivate var detailsLabel: UILabel? = nil
+    fileprivate var progressPath: UIBezierPath!
+    
+    var animationTime: CGFloat = 3.0
+    var animationDelay: CGFloat = 2.0
+    var lineWidth: CGFloat = 8.0
+    var shouldRotate: Bool = true
+    var shouldGradiant: Bool = false
+    var progressColor: UIColor = UIColor.white
+    var grad1Color: UIColor = UIColor.white
+    var grad2Color: UIColor = UIColor.black
+    
+    override init(frame: CGRect){
+        super.init(frame: frame)
+        
+        setupView()
+    }
+    
+    /**
+     - parameters:
+     - animationTime: duration of animation
+     - animationDelay:  delay between start and end of animation
+     - lineWidth: width of circle
+     - shouldRotate: rotate animating circle
+     - shouldGradiant: set a gradiant on circle
+     - progressColor: color of circle
+     - grad1Color: first grad color of circle - only if shouldGradiant is set to true
+     - grad2Color: second grad color of circle - only if shouldGradiant is set to true
+     */
+    init(frame: CGRect, animationTime: CGFloat, animationDelay: CGFloat, lineWidth: CGFloat, shouldRotate: Bool, shouldGradiant: Bool, progressColor: UIColor, grad1Color: UIColor = UIColor.white, grad2Color: UIColor = UIColor.black) {
+        super.init(frame: frame)
+        
+        self.animationTime = animationTime
+        self.animationDelay = animationDelay
+        self.lineWidth = lineWidth
+        self.shouldRotate = shouldRotate
+        self.shouldGradiant = shouldGradiant
+        self.progressColor = progressColor
+        self.grad1Color = grad1Color
+        self.grad2Color = grad2Color
+        
+        self.setupView()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        setupView()
+    }
+    
+    func setupView(){
+        self.backgroundColor = UIColor.clear
+    }
+    
+    override func draw(_ rect: CGRect) {
+        self.createMainLayer()
+    }
+    
+    //MARK: - Layers
+    //Create custom shape layers
+    fileprivate func createMainPath() -> UIBezierPath{
+        let circleRaduis = (min(self.bounds.width, self.bounds.height) / 2 - progressShape.lineWidth) / 2
+        let circleCenter = CGPoint(x: bounds.midX , y: bounds.midY)
+        let startAngle = CGFloat(M_PI_2)
+        let endAngle = startAngle + CGFloat(M_PI * 2)
+        
+        let progressBezier = UIBezierPath(arcCenter: circleCenter, radius: circleRaduis, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        
+        return progressBezier
+    }
+    
+    fileprivate func createMainLayer(){
+        progressShape.path = createMainPath().cgPath
+        progressShape.backgroundColor = UIColor.clear.cgColor
+        progressShape.fillColor = nil
+        progressShape.strokeColor = progressColor.cgColor
+        progressShape.lineWidth = self.lineWidth
+        progressShape.strokeStart = 0.0
+        progressShape.strokeEnd = 0.0
+        progressShape.lineJoin = "round"
+        
+        if shouldGradiant{
+            let gradiantLayer = createGradiantLayer(grad1Color, g2: grad2Color)
+            gradiantLayer.mask = progressShape
+            layer.addSublayer(gradiantLayer)
+        }else{
+            let maskLayer = CAShapeLayer()
+            maskLayer.strokeColor = progressColor.cgColor
+            maskLayer.lineWidth = self.lineWidth
+            maskLayer.strokeStart = 0.0
+            maskLayer.strokeEnd = 1.0
+            maskLayer.lineJoin = "round"
+            maskLayer.path = progressShape.path
+            
+            maskLayer.mask = progressShape
+            layer.addSublayer(maskLayer)
+        }
+        self.startProgress()
+    }
+    
+    fileprivate func createGradiantLayer(_ g1: UIColor, g2: UIColor) -> CAGradientLayer{
+        let gLayer = CAGradientLayer()
+        gLayer.frame = self.bounds
+        gLayer.locations = [0.0, 1.0]
+        
+        let top = grad1Color.cgColor
+        let bot = grad2Color.cgColor
+        gLayer.colors = [top, bot]
+        
+        return gLayer
+    }
+    
+    fileprivate func startProgress(){
+        let startAnimation = CABasicAnimation(keyPath: "strokeEnd")
+        startAnimation.fromValue = 0.0
+        startAnimation.toValue = 1.0
+        startAnimation.duration = CFTimeInterval(self.animationTime)
+        
+        startAnimation.setValue("animation", forKey: "strokeEnd")
+        startAnimation.fillMode = kCAFillModeForwards
+        
+        let endAnimation = CABasicAnimation(keyPath: "strokeStart")
+        endAnimation.beginTime = CFTimeInterval(animationDelay)
+        endAnimation.fromValue = 0.0
+        endAnimation.toValue = 1.0
+        endAnimation.duration = CFTimeInterval(self.animationTime - animationDelay)
+        
+        endAnimation.setValue("animation", forKey: "strokeStart")
+        endAnimation.fillMode = kCAFillModeForwards
+        
+        // if it's a circular path, it can have a rotation animation
+        //shouldRotate var indicate if progressbar should rotate
+        if shouldRotate{
+            rotate()
+        }
+        
+        let groupAnim = CAAnimationGroup()
+        groupAnim.animations = [startAnimation, endAnimation]
+        groupAnim.duration = CFTimeInterval(self.animationTime)
+        groupAnim.repeatCount = HUGE
+        groupAnim.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        
+        progressShape.add(groupAnim, forKey: "gruoupAnim")
+    }
+    
+    func rotate(){
+        let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
+        rotateAnimation.fromValue = 0.0
+        rotateAnimation.toValue = M_PI * 2// rotate 360 degrees
+        rotateAnimation.duration = CFTimeInterval(self.animationTime * 1.2)
+        rotateAnimation.repeatCount = HUGE
+        self.layer.add(rotateAnimation, forKey: nil)
     }
 }
 

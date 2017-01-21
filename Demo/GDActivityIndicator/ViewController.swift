@@ -15,21 +15,22 @@ class ViewController: UIViewController {
         case rotate
         case halfRotate
         case chain
+        case circle
     }
     
     let viewsInRow: Int = 2
     
     override func viewDidLayoutSubviews() {
-//        self.view.showLoading(msg: "Please Wait")
-//        self.view.showLoading(onView: self.view, indicatorType: .normal, msg: "Please wait...", backgroundType: .clearWithBox)
+        //        self.view.showLoading(msg: "Please Wait")
+        //        self.view.showLoading(onView: self.view, indicatorType: .normal, msg: "Please wait...", backgroundType: .clearWithBox)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.view.backgroundColor = UIColor.red.withAlphaComponent(0.7)
         
-        let indicators: [IndicatorType] = [.blink, .rotate, .halfRotate, .chain]
+        let indicators: [IndicatorType] = [.blink, .rotate, .halfRotate, .chain, .circle]
         
         self.createViews(numberOfRows: Int((Double(indicators.count) / Double(viewsInRow)).rounded(.up)), lst: indicators)
         
@@ -73,6 +74,12 @@ class ViewController: UIViewController {
                 
                 self.view.addSubview(indicatorView)
                 break
+            case .circle:
+                indicatorView = GDCircle()
+                indicatorView.translatesAutoresizingMaskIntoConstraints = false
+                indicators.append(indicatorView)
+                
+                self.view.addSubview(indicatorView)
             }
         }
         setupConstraints(totalRows: numberOfRows, views: indicators)
@@ -81,55 +88,33 @@ class ViewController: UIViewController {
     func setupConstraints(totalRows: Int, views: [UIView]){
         var row = 0
         var itemsInRow = 0
-        var lastAddedView: UIView!
         
         for itm in views{
             if itemsInRow < viewsInRow{
-                if itemsInRow == 0 && row == 0{
-                    let top: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 0)
-                    let left: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
-                    let height: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.height / CGFloat(totalRows))
-                    let width: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.width / CGFloat(viewsInRow))
-                    
-                    self.view.addConstraints([top, left, height, width])
-                }else{
-                    let top: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .top, relatedBy: .equal, toItem: lastAddedView, attribute: .top, multiplier: 1, constant: 0)
-                    let left: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .left, relatedBy: .equal, toItem: lastAddedView, attribute: .right, multiplier: 1, constant: 0)
-                    let height: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.height / CGFloat(totalRows))
-                    let width: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.width / CGFloat(viewsInRow))
-                    
-                    if itemsInRow == viewsInRow - 1{
-                        let right: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1, constant: 0)
-                        
-                        self.view.addConstraint(right)
-                    }
-                    
-                    self.view.addConstraints([top, left, height, width])
-                }
+                constraintHelper(itm: itm, totalRows: totalRows, itemsInRow: itemsInRow, row: row)
                 itemsInRow += 1
-                lastAddedView = itm
             }else{
                 row += 1
                 itemsInRow = 0
-                
-                if itemsInRow < viewsInRow{
-                    let top: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .top, relatedBy: .equal, toItem: lastAddedView, attribute: .bottom, multiplier: 1, constant: 0)
-                    let left: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
-                    let height: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.height / CGFloat(totalRows))
-                    let width: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.width / CGFloat(viewsInRow))
-                    
-                    if itemsInRow == viewsInRow - 1{
-                        let right: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1, constant: 0)
-                        
-                        self.view.addConstraint(right)
-                        
-                    }
-                    self.view.addConstraints([top, left, height, width])
-                }
-                lastAddedView = itm
+                constraintHelper(itm: itm, totalRows: totalRows, itemsInRow: itemsInRow, row: row)
+                itemsInRow += 1
             }
         }
+    }
+    
+    func constraintHelper(itm: UIView, totalRows: Int, itemsInRow: Int, row: Int){
+        let top: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: self.view.frame.height / CGFloat(totalRows) * CGFloat(row))
+        let left: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: (self.view.frame.width / CGFloat(viewsInRow)) * CGFloat(itemsInRow))
+        let height: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.height / CGFloat(totalRows))
+        let width: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: self.view.frame.width / CGFloat(viewsInRow))
         
+        if itemsInRow == viewsInRow - 1{
+            let right: NSLayoutConstraint = NSLayoutConstraint(item: itm, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1, constant: 0)
+            
+            self.view.addConstraint(right)
+        }
+        
+        self.view.addConstraints([top, left, height, width])
     }
 }
 

@@ -80,6 +80,7 @@ class ViewController: UIViewController {
                 indicators.append(indicatorView)
                 
                 self.view.addSubview(indicatorView)
+                break
             }
         }
         setupConstraints(totalRows: numberOfRows, views: indicators)

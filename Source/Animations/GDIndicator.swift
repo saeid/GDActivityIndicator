@@ -69,7 +69,7 @@ extension UIView{
      - msg: indicator view message, nil for none
      - backgroundType: different types for background and indicator view background view
      */
-    func showLoading(onView: UIView? = nil, indicatorType: Indicator = .normal ,msg: String? = nil, backgroundType: BackgroundType = .clearWithBox){
+    func showLoading(onView: UIView? = nil, indicatorType: Indicator = .normal ,msg: String? = nil, backgroundType: BackgroundType = .dimmed){
         
         var targetView: UIView!
         if let target = onView{
@@ -84,7 +84,7 @@ extension UIView{
         
         let bigView: UIView = UIView()
         bigView.tag = 10000
-        bigView.frame = self.bounds
+        bigView.frame = targetView.bounds
         targetView.addSubview(bigView)
         
         var indicatorView: UIView!

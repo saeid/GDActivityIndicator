@@ -21,8 +21,8 @@ class ViewController: UIViewController {
     let viewsInRow: Int = 2
     
     override func viewDidLayoutSubviews() {
-        //        self.view.showLoading(msg: "Please Wait")
-        //        self.view.showLoading(onView: self.view, indicatorType: .normal, msg: "Please wait...", backgroundType: .clearWithBox)
+//                self.view.showLoading(msg: "Please Wait")
+//                self.view.showLoading(onView: self.view, indicatorType: .normal, msg: "Please wait...", backgroundType: .clearWithBox)
     }
     
     override func viewDidLoad() {

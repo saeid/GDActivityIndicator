@@ -238,8 +238,8 @@ class GDCircle: UIView{
     fileprivate func createMainPath() -> UIBezierPath{
         let circleRaduis = (min(self.bounds.width, self.bounds.height) / 2 - progressShape.lineWidth) / 2
         let circleCenter = CGPoint(x: bounds.midX , y: bounds.midY)
-        let startAngle = CGFloat(M_PI_2)
-        let endAngle = startAngle + CGFloat(M_PI * 2)
+        let startAngle = CGFloat(Double.pi / 2)
+        let endAngle = startAngle + CGFloat(Double.pi * 2)
         
         let progressBezier = UIBezierPath(arcCenter: circleCenter, radius: circleRaduis, startAngle: startAngle, endAngle: endAngle, clockwise: true)
         
@@ -323,7 +323,7 @@ class GDCircle: UIView{
     func rotate(){
         let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
         rotateAnimation.fromValue = 0.0
-        rotateAnimation.toValue = M_PI * 2// rotate 360 degrees
+        rotateAnimation.toValue = Double.pi * 2// rotate 360 degrees
         rotateAnimation.duration = CFTimeInterval(self.animationTime * 1.2)
         rotateAnimation.repeatCount = HUGE
         self.layer.add(rotateAnimation, forKey: nil)
@@ -383,7 +383,7 @@ class GDCircularDotsBlinking: UIView{
     func circularDotsIndicator(){
         //Setting properties
         let circleStart: CGFloat = 0.0
-        let circleEnd: CGFloat = CGFloat(M_PI * 2)
+        let circleEnd: CGFloat = CGFloat(Double.pi * 2)
         let animTime = CACurrentMediaTime()
         let animTimes = [0.0, 0.5, 0.8, 1, 1.2, 1.26, 1.4, 1.6, 1.9, 2.1, 2.4, 2.8]
         
@@ -521,7 +521,7 @@ class GDCircularDotsRotating: UIView{
     func circularDotsRotatingIndicator(){
         //Setting properties
         let circleStart: CGFloat = 0.0
-        let circleEnd: CGFloat = CGFloat(M_PI * 2)
+        let circleEnd: CGFloat = CGFloat(Double.pi * 2)
         let animTime = CACurrentMediaTime()
         
         //Calculate possition for each circle in different directions
@@ -588,7 +588,7 @@ class GDCircularDotsRotating: UIView{
         
         //Rotate animation
         let rotateAnim = CAKeyframeAnimation(keyPath: "transform.rotation.z")
-        rotateAnim.values = [0, M_PI , M_PI * 2]
+        rotateAnim.values = [0, Double.pi , Double.pi * 2]
         rotateAnim.keyTimes = [0.0, 0.4, 1]
         rotateAnim.repeatCount = HUGE
         rotateAnim.duration = animDuration / 2
@@ -666,7 +666,7 @@ class GDCircularDotsChain: UIView{
     func circularDotsRotatingChain(){
         var circleShape: CAShapeLayer!
         let circleStart: CGFloat = 0.0
-        let circleEnd: CGFloat = CGFloat(M_PI * 2)
+        let circleEnd: CGFloat = CGFloat(Double.pi * 2)
         var animRate: Float = 0.0
         
         let rotateAnim = CABasicAnimation(keyPath: "transform.rotation.z")
@@ -686,7 +686,7 @@ class GDCircularDotsChain: UIView{
             circleShape.fillColor = UIColor.white.cgColor
             
             let posAnim = CAKeyframeAnimation(keyPath: "position")
-            posAnim.path = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: circleRadius * radiusMultiplier, startAngle: circleStart - CGFloat(M_PI_2), endAngle: circleEnd + circleStart - CGFloat(M_PI_2), clockwise: true).cgPath
+            posAnim.path = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: circleRadius * radiusMultiplier, startAngle: circleStart - CGFloat(Double.pi), endAngle: circleEnd + circleStart - CGFloat(Double.pi), clockwise: true).cgPath
             
             
             posAnim.repeatCount = HUGE
@@ -745,7 +745,7 @@ class GDHalfCircleRotating: UIView{
     func halfCircleRotating(){
         //Setting properties
         let circleStart: CGFloat = 0.0
-        let circleEnd: CGFloat = CGFloat(M_PI * 2)
+        let circleEnd: CGFloat = CGFloat(Double.pi * 2)
         
         //Calculate possition for each circle in different directions
         let center = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)

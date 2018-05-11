@@ -9,38 +9,29 @@
 import UIKit
 
 fileprivate func setupIndicatorConstraints(parentView: UIView, childView: UIView){
-    let centerX = NSLayoutConstraint(item: childView, attribute: .centerX, relatedBy: .equal, toItem: parentView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
-    let centerY = NSLayoutConstraint(item: childView, attribute: .centerY, relatedBy: .equal, toItem: parentView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
-    
-    let height = NSLayoutConstraint(item: childView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 100)
-    
-    parentView.addConstraints([centerX, centerY, height])
+    childView.centerXAnchor.constraint(equalTo: parentView.centerXAnchor, constant: 0.0).isActive = true
+    childView.centerYAnchor.constraint(equalTo: parentView.centerYAnchor, constant: 0.0).isActive = true
+    childView.heightAnchor.constraint(equalToConstant: 100).isActive = true
 }
 
 fileprivate func setupIndicatorConstraints(contView: UIView, indicatorView: UIView, lbl: UILabel? = nil){
-    let centerX = NSLayoutConstraint(item: indicatorView, attribute: .centerX, relatedBy: .equal, toItem: contView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
-    let centerY = NSLayoutConstraint(item: indicatorView, attribute: .centerY, relatedBy: .equal, toItem: contView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
+    indicatorView.centerXAnchor.constraint(equalTo: contView.centerXAnchor, constant: 0.0).isActive = true
+    indicatorView.centerYAnchor.constraint(equalTo: contView.centerYAnchor, constant: 0.0).isActive = true
     
-    let height = NSLayoutConstraint(item: indicatorView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 50.0)
-    let width = NSLayoutConstraint(item: indicatorView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 50.0)
+    indicatorView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    indicatorView.widthAnchor.constraint(equalToConstant: 50).isActive = true
     
     if let lbl = lbl{
-        let centerX = NSLayoutConstraint(item: lbl, attribute: .centerX, relatedBy: .equal, toItem: contView, attribute: .centerX, multiplier: 1.0, constant: 0.0)
-        let left = NSLayoutConstraint(item: lbl, attribute: .left, relatedBy: .equal, toItem: contView, attribute: .left, multiplier: 1.0, constant: 8.0)
-        let right = NSLayoutConstraint(item: lbl, attribute: .right, relatedBy: .equal, toItem: contView, attribute: .right, multiplier: 1.0, constant: -8.0)
-        let bottom = NSLayoutConstraint(item: lbl, attribute: .bottom, relatedBy: .equal, toItem: contView, attribute: .bottom, multiplier: 1.0, constant: -3.0)
+        lbl.centerXAnchor.constraint(equalTo: contView.centerXAnchor, constant: 0.0).isActive = true
+        lbl.leftAnchor.constraint(equalTo: contView.leftAnchor, constant: 8.0).isActive = true
+        lbl.rightAnchor.constraint(equalTo: contView.rightAnchor, constant: -8.0).isActive = true
+        lbl.bottomAnchor.constraint(equalTo: contView.bottomAnchor, constant: -3.0).isActive = true
         
         let desireWidth: CGFloat = lbl.frame.width < 100.0 ? 100.0 : lbl.frame.width + 16
-        let width = NSLayoutConstraint(item: contView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: desireWidth)
-        
-        contView.addConstraints([centerX, left, right, bottom, width])
+        contView.widthAnchor.constraint(equalToConstant: desireWidth).isActive = true
     }else{
-        let width = NSLayoutConstraint(item: contView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 100.0)
-        
-        contView.addConstraint(width)
-    }
-    
-    contView.addConstraints([centerX, centerY, height, width])
+        contView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+    }    
 }
 
 extension UIView{
